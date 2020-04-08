@@ -32,12 +32,12 @@ NUMBER_OF_DIGITS = 1000
 SEQUENCE_LENGTH = 13
 
 
-def get_local_sequence(i):
-    return [int(d) for d in (SERIES[i:i + SEQUENCE_LENGTH])]
+def get_local_sequence(start_index):
+    return [int(d) for d in (SERIES[start_index:start_index + SEQUENCE_LENGTH])]
 
 
-def get_local_product(i):
-    local_sequence = get_local_sequence(i)
+def get_local_product(start_index):
+    local_sequence = get_local_sequence(start_index)
     local_product = np.prod(local_sequence)
     return local_product
 
