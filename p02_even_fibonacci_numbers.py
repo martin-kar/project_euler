@@ -1,4 +1,4 @@
-'''
+"""
 Even Fibonacci numbers
 Problem 2
 
@@ -10,27 +10,30 @@ be:
 
 By considering the terms in the Fibonacci sequence whose values do not 
 exceed four million, find the sum of the even-valued terms.
-'''
+"""
+
+UPPER_LIMIT = 4 * 10 ** 6
+
 
 a = 1
 b = 2
-
-upper_limit = 4*10**6
-sum = 0
+even_fibonacci_sum = 0
 
 
-while b <= upper_limit:
-	# Print first part of Fibonacci sequence for sanity check:
-	if a < 100:
-		print(a)
-	
-	# Add to sum if even:
-	if b%2==0:
-		sum = sum+b
-	
-	# Generate next pair in Fibonacci seequence:
-	a,b = b,a+b
+def _is_even(number):
+    return number % 2 == 0
 
 
-print(sum)
+def add_to_sum_if_even(input_sum, term):
+    if _is_even(term):
+        output_sum = input_sum + term
+    else:
+        output_sum = input_sum
+    return output_sum
 
+
+while b <= UPPER_LIMIT:
+    even_fibonacci_sum = add_to_sum_if_even(even_fibonacci_sum, b)
+    a, b = b, a + b
+
+print(even_fibonacci_sum)
