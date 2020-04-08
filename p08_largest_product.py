@@ -1,13 +1,13 @@
-'''
+"""
 Largest product in a series
 Problem 8
 
-Find the thirteen adjacent digits in the 1000-digit number that have the 
+Find the thirteen adjacent digits in the 1000-digit number that have the
 greatest product. What is the value of this product?
-'''
+"""
 import numpy as np
 
-series = "73167176531330624919225119674426574742355349194934\
+SERIES = "73167176531330624919225119674426574742355349194934\
 96983520312774506326239578318016984801869478851843\
 85861560789112949495459501737958331952853208805511\
 12540698747158523863050715693290963295227443043557\
@@ -28,22 +28,32 @@ series = "73167176531330624919225119674426574742355349194934\
 05886116467109405077541002256983155200055935729725\
 71636269561882670428252483600823257530420752963450"
 
+NUMBER_OF_DIGITS = 1000
+SEQUENCE_LENGTH = 13
 
-nbr_of_digits = 1000
-seq_length = 13
-largest_sequence = []
-largest_product = 0
 
-# This loop goes through the series:
-for i in range(0,nbr_of_digits-seq_length+1):
-	local_sequence = [int(d) for d in (series[i:i+seq_length])]
-	local_product  = np.prod(local_sequence)
-	# If we have a new record:
-	if local_product > largest_product:
-		largest_product = local_product # Save record.
-		largest_sequence = local_sequence # Save record sequence.
-		
-# Print largest sequence for sanity check:
-print(largest_sequence)
-# Print final answer:
-print(largest_product)
+def get_local_sequence(i):
+    return [int(d) for d in (SERIES[i:i + SEQUENCE_LENGTH])]
+
+
+def get_local_product(i):
+    local_sequence = get_local_sequence(i)
+    local_product = np.prod(local_sequence)
+    return local_product
+
+
+def get_largest_product():
+    largest_product = 0
+    for i in range(0, NUMBER_OF_DIGITS - SEQUENCE_LENGTH + 1):
+        local_product = get_local_product(i)
+        largest_product = max(local_product, largest_product)
+    return largest_product
+
+
+def main():
+    largest_product = get_largest_product()
+    print(largest_product)
+
+
+if __name__ == '__main__':
+    main()
