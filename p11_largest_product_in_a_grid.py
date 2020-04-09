@@ -1,13 +1,13 @@
-'''
+"""
 Largest product in a grid
 Problem 11
-Find largest product of four elements in the grid, that are diagonal, 
+Find largest product of four elements in the grid, that are diagonal,
 horizontal, or vertical neighbors.
-'''
+"""
 
 import numpy as np
 
-grid_string = "08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08 \
+GRID_STRING = "08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08 \
 49 49 99 40 17 81 18 57 60 87 17 40 98 43 69 48 04 56 62 00 \
 81 49 31 73 55 79 14 29 93 71 40 67 53 88 30 03 49 13 36 65 \
 52 70 95 23 04 60 11 42 69 24 68 56 01 32 56 71 37 02 36 91 \
@@ -27,62 +27,98 @@ grid_string = "08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08 \
 20 69 36 41 72 30 23 88 34 62 99 69 82 67 59 85 74 04 36 16 \
 20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54 \
 01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48 "
-grid_size = 20
-neighbor_length = 4
+GRID_SIZE = 20
+NEIGHBOR_SEQUENCE_LENGTH = 4
+NUMBER_LENGTH = 2
+TOKENS_PER_NUMBER_INCLUDING_SPACE = 3
 
-# Convert string to array with ints:
-grid = np.zeros((grid_size, grid_size))
-for row_nbr, row in enumerate(grid):
-	for column_nbr, column in enumerate(row):
-		#print(row_nbr, column_nbr)
-		#print(grid_string[row_nbr*grid_size*3 + column_nbr*3])
-		grid[row_nbr,column_nbr] = int(grid_string[row_nbr*grid_size*3 + column_nbr*3:row_nbr*grid_size*3 + column_nbr*3+2])
 
-largest = 0 # Largest product found so far in search.
+def get_grid():
+    grid = np.zeros((GRID_SIZE, GRID_SIZE))
+    for row_nbr in range(GRID_SIZE):
+        for column_nbr in range(GRID_SIZE):
+            number = get_number(row_nbr, column_nbr)
+            grid[row_nbr, column_nbr] = number
+    return grid
 
-def update_largest(prod, largest):
-	if prod > largest:
-		return prod
-	else:
-		return largest
 
-# Horizontal neigbors
-for row_nbr, row in enumerate(grid):
-	for column_nbr, column in enumerate(row):
-		if column_nbr + neighbor_length > grid_size:
-			break
-		prod = np.prod(row[column_nbr:column_nbr+neighbor_length])
-		largest = update_largest(prod, largest)
-	
-# Vertical neighbors
-for row_nbr, row in enumerate(grid):
-	if row_nbr + neighbor_length  > grid_size:
-		break
-	for column_nbr, column in enumerate(row):
-		prod = np.prod(grid[row_nbr:row_nbr:neighbor_length, column_nbr])
-		largest = update_largest(prod, largest)
+def get_number(row_nbr, column_nbr):
+    tokens_in_above_rows = row_nbr * GRID_SIZE * TOKENS_PER_NUMBER_INCLUDING_SPACE
+    grid_start_index = tokens_in_above_rows + column_nbr * TOKENS_PER_NUMBER_INCLUDING_SPACE
+    grid_stop_index = tokens_in_above_rows + column_nbr * TOKENS_PER_NUMBER_INCLUDING_SPACE + NUMBER_LENGTH
+    number_string = GRID_STRING[grid_start_index: grid_stop_index]
+    return int(number_string)
 
-# Diagonal down-right neighbors
-for row_nbr, row in enumerate(grid):
-	if row_nbr + neighbor_length > grid_size:
-		break
-	for column_nbr, column in enumerate(row):
-		if column_nbr + neighbor_length  > grid_size:
-			break
-		prod = grid[row_nbr, column_nbr]*grid[row_nbr+1, column_nbr+1]*grid[row_nbr+2, column_nbr+2]*grid[row_nbr+3, column_nbr+3]
-		largest = update_largest(prod, largest)
-		
-# Diagonal down-left neighbors
-for row_nbr, row in enumerate(grid):
-	print(row_nbr)
-	if row_nbr + neighbor_length > grid_size:
-		print(row_nbr)
-		break
-	for column_nbr, column in enumerate(row):
-		print(column_nbr - neighbor_length)
-		if column_nbr - neighbor_length  < 0:
-			continue
-		prod = grid[row_nbr, column_nbr]*grid[row_nbr+1, column_nbr-1]*grid[row_nbr+2, column_nbr-2]*grid[row_nbr+3, column_nbr-3]
-		largest = update_largest(prod, largest)
 
-print(largest)
+GRID = get_grid()
+
+
+def get_largest_horizontal_product():
+    largest = 0
+    for row_nbr, row in enumerate(GRID):
+        for column_nbr, column in enumerate(row):
+            if column_nbr + NEIGHBOR_SEQUENCE_LENGTH > GRID_SIZE:
+                break
+            prod = np.prod(row[column_nbr:column_nbr + NEIGHBOR_SEQUENCE_LENGTH])
+            largest = max(prod, largest)
+    return largest
+
+
+def get_largest_vertical_product():
+    largest = 0
+    for row_nbr, row in enumerate(GRID):
+        if row_nbr + NEIGHBOR_SEQUENCE_LENGTH > GRID_SIZE:
+            break
+        for column_nbr, column in enumerate(row):
+            prod = np.prod(GRID[row_nbr:row_nbr:NEIGHBOR_SEQUENCE_LENGTH, column_nbr])
+            largest = max(prod, largest)
+    return largest
+
+
+def get_largest_diagonal_down_right_product():
+    largest = 0
+    for row_nbr, row in enumerate(GRID):
+        if row_nbr + NEIGHBOR_SEQUENCE_LENGTH > GRID_SIZE:
+            break
+        for column_nbr, column in enumerate(row):
+            if column_nbr + NEIGHBOR_SEQUENCE_LENGTH > GRID_SIZE:
+                break
+            prod = GRID[row_nbr, column_nbr] * GRID[row_nbr + 1, column_nbr + 1] * GRID[row_nbr + 2, column_nbr + 2] * GRID[
+                row_nbr + 3, column_nbr + 3]
+            largest = max(prod, largest)
+    return largest
+
+
+def get_largest_diagonal_down_left_product():
+    largest = 0
+    for row_nbr, row in enumerate(GRID):
+        if row_nbr + NEIGHBOR_SEQUENCE_LENGTH > GRID_SIZE:
+            print(row_nbr)
+            break
+        for column_nbr, column in enumerate(row):
+            print(column_nbr - NEIGHBOR_SEQUENCE_LENGTH)
+            if column_nbr - NEIGHBOR_SEQUENCE_LENGTH < 0:
+                continue
+            prod = GRID[row_nbr, column_nbr] * GRID[row_nbr + 1, column_nbr - 1] * GRID[row_nbr + 2, column_nbr - 2] * GRID[
+                row_nbr + 3, column_nbr - 3]
+            largest = max(prod, largest)
+    return largest
+
+
+def get_largest_product():
+    largest_horizontal_product = get_largest_horizontal_product()
+    largest_vertical_product = get_largest_vertical_product()
+    largest_diagonal_down_right_product = get_largest_diagonal_down_right_product()
+    largest_diagonal_down_left_product = get_largest_diagonal_down_left_product()
+    largest_product = max(largest_horizontal_product, largest_vertical_product, largest_diagonal_down_right_product,
+                          largest_diagonal_down_left_product)
+    return largest_product
+
+
+def main():
+    largest_product = get_largest_product()
+    print(largest_product)
+
+
+if __name__ == '__main__':
+    main()
