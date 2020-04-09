@@ -6,21 +6,25 @@ see that the 6th prime is 13.
 What is the 10 001st prime number?
 """
 
+REQUIRED_PRIME_INDEX = 10001
+
 
 def is_prime(nbr, stored_primes):
     for prime in stored_primes:
+        if prime ** 2 > nbr:
+            return True
         if nbr % prime == 0:
             return False
     return True
 
 
 def get_prime_number():
-    stored_primes = [2]
-    nbr = 2
-    while len(stored_primes) <= 10000:
-        nbr += 1
+    stored_primes = [2, 3]
+    nbr = 3
+    while len(stored_primes) < REQUIRED_PRIME_INDEX:
+        nbr += 2
         if is_prime(nbr, stored_primes):
-            stored_primes.extend([nbr])
+            stored_primes.append(nbr)
     return stored_primes[-1]
 
 
